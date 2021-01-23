@@ -1,3 +1,4 @@
+import copy
 import pathlib
 import random
 import typing as tp
@@ -30,45 +31,83 @@ class GameOfLife:
 
     def create_grid(self, randomize: bool = False) -> Grid:
         # Copy from previous assignment
-        pass
+        if randomize == True:
+            matrix = [[random.randint(0, 1) for y in range(self.cols)] for x in range(self.rows)]
+            return matrix
+        if randomize == False:
+            matrix = [[0 for y in range(self.cols)] for x in range(self.rows)]
+        return matrix
 
     def get_neighbours(self, cell: Cell) -> Cells:
         # Copy from previous assignment
-        pass
+        neighb = []
+        row, col = cell
+        for i in range(max(0, row - 1), min(self.rows, row + 2)):
+            for j in range(max(0, col - 1), min(self.cols, col + 2)):
+                if (i, j) != cell:
+                    neighb.append(self.curr_generation[i][j])
+        return neighb
 
     def get_next_generation(self) -> Grid:
         # Copy from previous assignment
-        pass
+        copy_grid = self.create_grid(False)
+        for i in range(self.rows):
+            for j in range(self.cols):
+                if (self.curr_generation[i][j] == 0) and sum(self.get_neighbours((i, j))) == 3:
+                    copy_grid[i][j] = 1
+                elif (self.curr_generation[i][j] == 1) and (
+                    1 < sum(self.get_neighbours((i, j))) < 4
+                ):
+                    copy_grid[i][j] = 1
+        return copy_grid
 
     def step(self) -> None:
         """
         Выполнить один шаг игры.
         """
-        pass
+        self.prev_generation = copy.deepcopy(self.curr_generation)
+        self.curr_generation = self.get_next_generation()
+        self.generations += 1
 
     @property
     def is_max_generations_exceeded(self) -> bool:
         """
         Не превысило ли текущее число поколений максимально допустимое.
         """
-        pass
+        if self.generations == self.max_generations:
+            return True
+        else:
+            return False
 
     @property
     def is_changing(self) -> bool:
         """
         Изменилось ли состояние клеток с предыдущего шага.
         """
-        pass
+        if self.prev_generation != self.curr_generation:
+            return True
+        else:
+            return False
 
     @staticmethod
     def from_file(filename: pathlib.Path) -> "GameOfLife":
         """
         Прочитать состояние клеток из указанного файла.
         """
-        pass
+        doc = open(filename, "r")
+        doc_grid = [[int(col) for col in row.strip()] for row in doc]
+        doc.close()
+        game = GameOfLife((len(doc_grid), len(doc_grid[0])))
+        game.curr_generation = doc_grid
+        return game
 
     def save(self, filename: pathlib.Path) -> None:
         """
         Сохранить текущее состояние клеток в указанный файл.
         """
-        pass
+        doc = open(filename, "w")
+        for row in self.curr_generation:
+            for col in row:
+                doc.write(str(col))
+            doc.write("\n")
+        doc.close()
