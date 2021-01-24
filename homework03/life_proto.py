@@ -80,13 +80,13 @@ class GameOfLife:
         out : Grid
             Матрица клеток размером `cell_height` х `cell_width`.
         """
-        if randomize == True:
+        if randomize:
             matrix = [
                 [random.randint(0, 1) for y in range(self.cell_width)]
                 for x in range(self.cell_height)
             ]
             return matrix
-        if randomize == False:
+        if not randomize:
             matrix = [[0 for y in range(self.cell_width)] for x in range(self.cell_height)]
         return matrix
 
@@ -104,7 +104,7 @@ class GameOfLife:
                 pygame.draw.rect(
                     self.screen,
                     color,
-                    (i * self.cell_size + 1, j * self.cell_size + 1, sizee, sizee),
+                    (j * self.cell_size + 1, i * self.cell_size + 1, sizee, sizee),
                 )
 
     def get_neighbours(self, cell: Cell) -> Cells:
