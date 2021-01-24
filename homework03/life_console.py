@@ -1,4 +1,5 @@
 import curses
+import time
 
 from life import GameOfLife
 from ui import UI
@@ -34,7 +35,6 @@ class Console(UI):
 
         self.draw_grid(screen)
         screen.refresh()
-        screen.getch()
 
     def draw_grid(self, screen) -> None:
         """ Отобразить состояние клеток. """
@@ -53,8 +53,9 @@ class Console(UI):
         screen = curses.initscr()
         curses.wrapper(self.draw_borders)
         while not self.life.is_max_generations_exceeded and self.life.is_changing:
-            self.life.step()
             self.draw_borders(screen)
+            time.sleep(0.5)
+            self.life.step()
         curses.endwin()
 
 
