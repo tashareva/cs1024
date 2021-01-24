@@ -31,10 +31,10 @@ class GameOfLife:
 
     def create_grid(self, randomize: bool = False) -> Grid:
         # Copy from previous assignment
-        if randomize == True:
+        if randomize:
             matrix = [[random.randint(0, 1) for y in range(self.cols)] for x in range(self.rows)]
             return matrix
-        if randomize == False:
+        if not randomize:
             matrix = [[0 for y in range(self.cols)] for x in range(self.rows)]
         return matrix
 
