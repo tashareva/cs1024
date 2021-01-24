@@ -32,6 +32,10 @@ class Console(UI):
                 pass
             doc = ""
 
+        self.draw_grid(screen)
+        screen.refresh()
+        screen.getch()
+
     def draw_grid(self, screen) -> None:
         """ Отобразить состояние клеток. """
         y, x = screen.getmaxyx()
