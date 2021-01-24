@@ -35,7 +35,7 @@ class GUI(UI):
                 pygame.draw.rect(
                     self.screen,
                     color,
-                    (i * self.cell_size + 1, j * self.cell_size + 1, lenght, lenght),
+                    (j * self.cell_size + 1, i * self.cell_size + 1, lenght, lenght),
                 )
 
     def run(self) -> None:
@@ -52,7 +52,7 @@ class GUI(UI):
                 if event.type == pygame.QUIT:
                     running = False
                 elif event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
-                    pause = True
+                    pause = not pause
 
             self.draw_lines()
 
@@ -61,7 +61,7 @@ class GUI(UI):
                     if event.type == pygame.QUIT:
                         running = False
                     elif event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
-                        pause = True
+                        pause = not pause
                     elif event.type == pygame.MOUSEBUTTONUP:
                         doc = event.pos
                         row = doc[1] // self.cell_size
