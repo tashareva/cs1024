@@ -29,7 +29,7 @@ def get_friends(
     :param fields: Список полей, которые нужно получить для каждого пользователя.
     :return: Список идентификаторов друзей пользователя или список пользователей.
     """
-    parameters = { 
+    parameters = {
         "access_token": VK_CONFIG["access_token"],
         "v": VK_CONFIG["version"],
         "user_id": user_id if user_id is not None else " ",
@@ -37,12 +37,14 @@ def get_friends(
         "offset": offset,
         "fields": ",".join(fields) if fields is not None else " ",
     }
-    result = session.get("friends.get", params=parameters)  
+    result = session.get("friends.get", params=parameters)
     document = result.json()
     if "error" in document or not result.ok:
         raise APIError(document["error"]["error_msg"])
     else:
-        return FriendsResponse(count=result.json()["result"]["count"], items=result.json()["result"]["items"])
+        return FriendsResponse(
+            count=result.json()["result"]["count"], items=result.json()["result"]["items"]
+        )
 
 
 class MutualFriends(tp.TypedDict):
@@ -85,7 +87,6 @@ def get_mutual(
             raise APIError(result_json["error"]["error_msg"])
         return result_json["response"]
 
-
     results = []
     if progress is None:
         progress = lambda x: x
@@ -98,7 +99,7 @@ def get_mutual(
             "count": count if count is not None else "",
             "offset": offset + i * 100,
         }
-        result = session.get(f"friends.getMutual", params=parameters)  
+        result = session.get(f"friends.getMutual", params=parameters)
         filee = result.json()
         if "error" in filee or not result.ok:
             raise APIError(filee["error"]["error_msg"])
