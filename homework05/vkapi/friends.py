@@ -113,4 +113,4 @@ def get_mutual(
             )
         if i % 3 == 2:
             time.sleep(1)
-    return result
+    return results
