@@ -97,6 +97,24 @@ def get_block(grid: tp.List[tp.List[str]], pos: tp.Tuple[int, int]) -> tp.List[s
     return block
 
 
+def get_diagonal(
+    grid: tp.List[tp.List[str]], pos: tp.Tuple[int, int], one: tp.List[str], two: tp.List[str]
+) -> tp.Optional[tp.Union[tp.List[tp.List[str]], tp.List[str]]]:
+    one = []
+    two = []
+    diagonals = [one, two]
+    for i in range(1, 10):
+        one.append(grid[i][i])
+        two.append(grid[i][(i - 8) * -1])
+    if pos[0] == pos[1]:
+        return one
+    if pos[0] == (pos[1] - 8) * -1:
+        return two
+    if pos == [4, 4]:
+        return diagonals
+    return None
+
+
 def find_empty_positions(grid: tp.List[tp.List[str]]) -> tp.Optional[tp.Tuple[int, int]]:
     """Найти первую свободную позицию в пазле
 
