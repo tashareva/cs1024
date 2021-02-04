@@ -3,7 +3,8 @@ import math
 import time
 import typing as tp
 
-from vkapi import config, session
+from vkapi import session
+from vkapi.config import VK_CONFIG
 from vkapi.exceptions import APIError
 
 QueryParams = tp.Optional[tp.Dict[str, tp.Union[str, int]]]
@@ -28,7 +29,20 @@ def get_friends(
     :param fields: Список полей, которые нужно получить для каждого пользователя.
     :return: Список идентификаторов друзей пользователя или список пользователей.
     """
-    pass
+    parameters = { 
+        "access_token": VK_CONFIG["access_token"],
+        "v": VK_CONFIG["version"],
+        "user_id": user_id if user_id is not None else " ",
+        "count": count,
+        "offset": offset,
+        "fields": ",".join(fields) if fields is not None else " ",
+    }
+    result = session.get("friends.get", params=parameters)  
+    document = result.json()
+    if "error" in document or not result.ok:
+        raise APIError(document["error"]["error_msg"])
+    else:
+        return FriendsResponse(count=result.json()["result"]["count"], items=result.json()["result"]["items"])
 
 
 class MutualFriends(tp.TypedDict):
@@ -57,4 +71,45 @@ def get_mutual(
     :param offset: Смещение, необходимое для выборки определенного подмножества общих друзей.
     :param progress: Callback для отображения прогресса.
     """
-    pass
+    if target_uids is None:
+        parameters = {
+            "access_token": VK_CONFIG["access_token"],
+            "v": VK_CONFIG["version"],
+            "source_uid": source_uid if source_uid is not None else "",
+            "target_uid": target_uid,
+            "order": order,
+        }
+        result = session.get(f"friends.getMutual", params=parameters)
+        result_json = result.json()
+        if "error" in result_json or not result.ok:
+            raise APIError(result_json["error"]["error_msg"])
+        return result_json["response"]
+
+
+    results = []
+    if progress is None:
+        progress = lambda x: x
+    for i in progress(range(((len(target_uids) + 99) // 100))):
+        parameters = {
+            "access_token": VK_CONFIG["access_token"],
+            "v": VK_CONFIG["version"],
+            "target_uids": ",".join(map(str, target_uids)),
+            "order": order,
+            "count": count if count is not None else "",
+            "offset": offset + i * 100,
+        }
+        result = session.get(f"friends.getMutual", params=parameters)  
+        filee = result.json()
+        if "error" in filee or not result.ok:
+            raise APIError(filee["error"]["error_msg"])
+        for arg in filee["result"]:
+            results.append(
+                MutualFriends(
+                    id=arg["id"],
+                    common_friends=arg["common_friends"],
+                    common_count=arg["common_count"],
+                )
+            )
+        if i % 3 == 2:
+            time.sleep(1)
+    return result
