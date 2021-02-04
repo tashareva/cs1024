@@ -55,7 +55,7 @@ def get_posts_2500(
         "access_token": VK_CONFIG["access_token"],
         "v": VK_CONFIG["version"],
     }
-    response = session.post("execute", data=data)
+    response = session.post("execute", data=data)  # type: ignore
     doc = response.json()
     if "error" in doc or not response.ok:
         raise APIError(doc["error"]["error_msg"])
