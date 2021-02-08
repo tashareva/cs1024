@@ -45,8 +45,9 @@ class Session(requests.Session):
 
         retry = Retry(
             total=max_retries,
-            status_forcelist=[500, 503],
+            status_forcelist=[429, 500, 502, 503, 504],
             backoff_factor=backoff_factor,
+            method_whitelist=["HEAD", "GET", "OPTIONS", "POST"],
         )
 
         adapter = TimeoutHTTPAdapter(timeout=timeout, max_retries=retry)
