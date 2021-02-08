@@ -22,7 +22,7 @@ class TimeoutHTTPAdapter(HTTPAdapter):
         return super().send(request, **kwargs)
 
 
-class Session:
+class Session(requests.Session):
     """
     Сессия.
 
@@ -41,17 +41,16 @@ class Session:
     ) -> None:
         super().__init__()
         self.base_url = base_url
-        self.timeout = timeout
+        # self.timeout = timeout
 
         retry = Retry(
             total=max_retries,
-            status_forcelist=[429, 500, 502, 503, 504],
+            status_forcelist=[500, 503],
             backoff_factor=backoff_factor,
-            method_whitelist=["HEAD", "GET", "OPTIONS", "POST"],
         )
 
         adapter = TimeoutHTTPAdapter(timeout=timeout, max_retries=retry)
-        self.mount = (self.base_url, adapter)
+        self.mount = (self.base_url, adapter)  # type: ignore
 
     def get(self, url: str, *args: tp.Any, **kwargs: tp.Any) -> requests.Response:  # type: ignore
         return super().get(self.base_url + "/" + url, *args, **kwargs)
