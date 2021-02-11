@@ -1,16 +1,16 @@
 import pathlib
 import random
 import typing as tp
+from typing import List
 
 T = tp.TypeVar("T")
 
 
-def read_sudoku(path: tp.Union[str, pathlib.Path]) -> tp.List[tp.List[str]]:
+def read_sudoku(filename: str) -> List[List[str]]:
     """ Прочитать Судоку из указанного файла """
-    path = pathlib.Path(path)
-    with path.open() as f:
-        puzzle = f.read()
-    return create_grid(puzzle)
+    digits = [c for c in open(filename).read() if c in "123456789."]
+    grid = group(digits, 9)
+    return grid
 
 
 def create_grid(puzzle: str) -> tp.List[tp.List[str]]:
@@ -97,7 +97,19 @@ def get_block(grid: tp.List[tp.List[str]], pos: tp.Tuple[int, int]) -> tp.List[s
     return block
 
 
-def get_diagonal(
+def get_diagonals(grid: List[List[str]], diagonals: tp.List[[str], [str]]) -> List[str, str]:
+    one = []
+    two = []
+    diagonals = [one, two]
+    for i in range(len(grid)):
+        for y in range(len(grid)):
+            one.append(grid[i][i])
+            two.append(grid[y][len(grid) - y - 1])
+    return diagonals
+    print(one, two)
+
+
+"""def get_diagonal(
     grid: tp.List[tp.List[str]], pos: tp.Tuple[int, int], one: tp.List[str], two: tp.List[str]
 ) -> tp.Optional[tp.Union[tp.List[tp.List[str]], tp.List[str]]]:
     one = []
@@ -112,7 +124,7 @@ def get_diagonal(
         return two
     if pos == [4, 4]:
         return diagonals
-    return None
+    return None"""
 
 
 def find_empty_positions(grid: tp.List[tp.List[str]]) -> tp.Optional[tp.Tuple[int, int]]:
