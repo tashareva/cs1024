@@ -97,16 +97,18 @@ def get_block(grid: tp.List[tp.List[str]], pos: tp.Tuple[int, int]) -> tp.List[s
     return block
 
 
-def get_diagonals(grid: List[List[str]], diagonals: tp.List[[str], [str]]) -> List[str, str]:
-    one = []
-    two = []
-    diagonals = [one, two]
+def diag1(grid: List[List[str]]) -> List[str]:
+    diag1 = []
     for i in range(len(grid)):
-        for y in range(len(grid)):
-            one.append(grid[i][i])
-            two.append(grid[y][len(grid) - y - 1])
-    return diagonals
-    print(one, two)
+        diag1.append(grid[i][i])
+    return diag1
+
+
+def diag2(grid: List[List[str]]) -> List[str]:
+    diag2 = []
+    for y in range(len(grid)):
+        diag2.append(grid[y][len(grid) - y - 1])
+    return diag2
 
 
 """def get_diagonal(
