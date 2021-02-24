@@ -53,9 +53,11 @@ class Console(UI):
         screen = curses.initscr()
         curses.wrapper(self.draw_borders)
         while not self.life.is_max_generations_exceeded and self.life.is_changing:
+            self.life.step()
             self.draw_borders(screen)
             time.sleep(0.5)
-            self.life.step()
+            if self.life.checking() is True:
+                break
         curses.endwin()
 
 
