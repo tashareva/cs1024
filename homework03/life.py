@@ -28,6 +28,8 @@ class GameOfLife:
         self.max_generations = max_generations
         # Текущее число поколений
         self.generations = 1
+        # Минимальная сумма элементов, находящихся на поле
+        self.minisum = float("inf")
 
     def create_grid(self, randomize: bool = False) -> Grid:
         # Copy from previous assignment
@@ -68,6 +70,39 @@ class GameOfLife:
         self.prev_generation = copy.deepcopy(self.curr_generation)
         self.curr_generation = self.get_next_generation()
         self.generations += 1
+
+    def elements_sum(self) -> int:
+        """
+        Сумма элементов текущего поколения
+        Returns
+        ----------
+        out: int
+        """
+
+        el_sum = 0
+        for i in range(self.rows):
+            for j in range(self.cols):
+                el_sum += self.curr_generation[i][j]
+        return el_sum
+
+    def checking(self) -> bool:
+        """
+        Проверка на зацикливание игры.
+        ----------
+        out: bool
+        """
+
+        el_sum = self.elements_sum
+        if el_sum < self.minisum:
+            self.proizv = self.rows * self.cols
+            self.minisum = el_sum
+            return False
+        else:
+            self.proizv -= 1
+            if self.proizv == 0:
+                return True
+            else:
+                return False
 
     @property
     def is_max_generations_exceeded(self) -> bool:
