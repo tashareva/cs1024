@@ -93,9 +93,9 @@ class GameOfLife:
         """
 
         el_sum = self.elements_sum
-        if el_sum < self.minisum:
+        if el_sum < self.minisum:  # type: ignore
             self.proizv = self.rows * self.cols
-            self.minisum = el_sum
+            self.minisum = el_sum  # type: ignore
             return False
         else:
             self.proizv -= 1
