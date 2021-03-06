@@ -36,17 +36,18 @@ def resolve_object(obj_name: str, gitdir: pathlib.Path) -> tp.List[str]:
 
 
 def find_object(obj_name: str, gitdir: pathlib.Path) -> str:
-    pass
+    objects = repo_find(gitdir) / "objects"
+    if (objects / obj_name).exists():
+        return str(objects / obj_name)
+    else:
+        raise Exception(f"Object {obj_name} does not exist")
 
 
 def read_object(sha: str, gitdir: pathlib.Path) -> tp.Tuple[str, bytes]:
     objects = repo_find() / "objects"
     with (objects / sha[:2] / sha[2:]).open("rb") as f:
         data = zlib.decompress(f.read())
-    return (
-        data.split(b"\00")[0].split(b" ")[0].decode(),
-        data.split(b"\00", maxsplit=1)[1],
-    )
+    return (data.split(b"\00")[0].split(b" ")[0].decode(), data.split(b"\00", maxsplit=1)[1])
 
 
 def read_tree(data: bytes) -> tp.List[tp.Tuple[int, str, str]]:
@@ -78,8 +79,14 @@ def cat_file(obj_name: str, pretty: bool = True) -> None:
                 print(f"{tree[0]:06}", "tree", tree[2] + "\t" + tree[1])
 
 
-def find_tree_files(tree_sha: str, gitdir: pathlib.Path) -> tp.List[tp.Tuple[str, str]]:
-    pass
+def find_tree_files(tree_sha: tp.Any, gitdir: tp.Any) -> tp.Set[tp.Any]:
+    objects = {tree_sha}
+    for mode, path, sha in read_tree(tree_sha):
+        if stat.S_ISDIR(mode):
+            objects.update(find_tree_files(sha, path))
+        else:
+            objects.add(sha)
+    return objects
 
 
 def commit_parse(raw: bytes, start: int = 0, dct=None):
