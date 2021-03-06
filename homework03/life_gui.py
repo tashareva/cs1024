@@ -15,7 +15,7 @@ class GUI(UI):
         )
 
     def draw_lines(self) -> None:
-        # Copy from previous assignment
+        # Copy from previous assignmen
         width = self.life.cols * self.cell_size
         height = self.life.rows * self.cell_size
         for x in range(0, width, self.cell_size):
