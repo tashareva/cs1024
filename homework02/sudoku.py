@@ -97,36 +97,87 @@ def get_block(grid: tp.List[tp.List[str]], pos: tp.Tuple[int, int]) -> tp.List[s
     return block
 
 
-def diag1(grid: List[List[str]]) -> List[str]:
-    diag1 = []
-    for i in range(len(grid)):
-        diag1.append(grid[i][i])
-    return diag1
+def get_diagonal(grid: tp.List[tp.List[str]], pos: tp.Tuple[int, int]) -> tp.List:
+    """Возвращает все значения диагоналей, в который попадает позиция pos
 
+>>> grid = [["0", "2", "3", "4", "5", "6", "7", "8", "1"], \
+                ["1", "0", "3", "4", "5", "6", "7", "1", "9"], \
+                ["1", "2", "0", "4", "5", "6", "1", "8", "9"], \
+                ["1", "2", "3", "0", "5", "1", "7", "8", "9"], \
+                ["1", "2", "3", "4", "0", "6", "7", "8", "9"], \
+                ["1", "2", "3", "1", "5", "0", "7", "8", "9"], \
+                ["1", "2", "1", "4", "5", "6", "0", "8", "9"], \
+                ["1", "1", "3", "4", "5", "6", "7", "0", "9"], \
+                ["1", "2", "3", "4", "5", "6", "7", "8", "0"]]
+    >>> get_diagonal(grid, (0, 0))
+    ['0', '0', '0', '0', '0', '0', '0', '0', '0']
+    >>> get_diagonal(grid, (1, 1))
+    ['0', '0', '0', '0', '0', '0', '0', '0', '0']
+    >>> get_diagonal(grid, (3, 3))
+    ['0', '0', '0', '0', '0', '0', '0', '0', '0']
+    >>> get_diagonal(grid, (8, 8))
+    ['0', '0', '0', '0', '0', '0', '0', '0', '0']
+    >>> get_diagonal(grid, (7, 7))
+    ['0', '0', '0', '0', '0', '0', '0', '0', '0']
+    >>> get_diagonal(grid, (8, 0))
+    ['1', '1', '1', '1', '0', '1', '1', '1', '1']
+    >>> get_diagonal(grid, (2, 6))
+    ['1', '1', '1', '1', '0', '1', '1', '1', '1']
+    >>> get_diagonal(grid, (6, 2))
+    ['1', '1', '1', '1', '0', '1', '1', '1', '1'] 
+    """
+    diagonal_left = []  # вот такая диагональ - \
+    diagonal_right = []  # вот такая диагональ - /
 
-def diag2(grid: List[List[str]]) -> List[str]:
-    diag2 = []
-    for y in range(len(grid)):
-        diag2.append(grid[y][len(grid) - y - 1])
-    return diag2
+    # работаем с ЛЕВОЙ диагональю
+    # запишем в список все значения диагонали от позиции pos и влево
+    top = pos[0]
+    left = pos[1]
+    while top != 0 and left != 0:
+        diagonal_left.append(grid[top - 1][left - 1])
+        top -= 1
+        left -= 1
 
+    # получим результат "снизу вверх", преобразуем в "сверху вниз"
+    diagonal_left.reverse()
 
-"""def get_diagonal(
-    grid: tp.List[tp.List[str]], pos: tp.Tuple[int, int], one: tp.List[str], two: tp.List[str]
-) -> tp.Optional[tp.Union[tp.List[tp.List[str]], tp.List[str]]]:
-    one = []
-    two = []
-    diagonals = [one, two]
-    for i in range(1, 10):
-        one.append(grid[i][i])
-        two.append(grid[i][(i - 8) * -1])
-    if pos[0] == pos[1]:
-        return one
-    if pos[0] == (pos[1] - 8) * -1:
-        return two
-    if pos == [4, 4]:
-        return diagonals
-    return None"""
+    # дополним список значениями диагонали от позиции pos и вправо
+    bottom = pos[0]
+    right = pos[1]
+    while bottom != 9 and right != 9:
+        diagonal_left.append(grid[bottom][right])
+        bottom += 1
+        right += 1
+
+    # работаем с ПРАВОЙ диагональю
+    # запишем в список все значения диагонали от позиции pos и вправо
+    top = pos[0]
+    right = pos[1]
+    while top != 0 and right != 9:
+        diagonal_right.append(grid[top - 1][right + 1])
+        top -= 1
+        right += 1
+
+    # получим результат "снизу вверх", преобразуем в "сверху вниз"
+    diagonal_right.reverse()
+
+    # запишем в список все значения диагонали от позиции pos и влево
+    bottom = pos[0]  # row
+    left = pos[1]  # col
+    while bottom != 9 and left != -1:
+        diagonal_right.append(grid[bottom][left])
+        bottom += 1
+        left -= 1
+
+    # если попали на цент. клетку, то вернем две диагонали
+    # если в правой диагонали оказалось больше значений, то мы должны вернуть ее
+    # во всех остальных случаях возвращаем левую
+    if pos[0] == pos[1] == 4:
+        return (diagonal_left, diagonal_right)  # type: ignore
+    elif len(diagonal_right) > len(diagonal_left):
+        return diagonal_right
+    else:
+        return diagonal_left
 
 
 def find_empty_positions(grid: tp.List[tp.List[str]]) -> tp.Optional[tp.Tuple[int, int]]:
